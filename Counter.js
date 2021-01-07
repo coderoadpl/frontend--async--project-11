@@ -1,6 +1,8 @@
 import { Header } from './Header.js'
 import { Button } from './Button.js'
 
+const DB_URL = 'https://coderoad--sandbox-default-rtdb.firebaseio.com/counter-2/.json'
+
 export const Counter = class {
 
     constructor(selector) {
@@ -15,6 +17,25 @@ export const Counter = class {
 
     init() {
         this.render()
+        this.fetchNumber()
+    }
+
+    fetchNumber(){
+        return fetch(DB_URL)
+            .then((r) => r.json())
+            .then((numberFromDb) =>  {
+                this.number = numberFromDb
+                this.render()
+            })
+    }
+
+    saveAndRefetch() {
+        const newNumber = this.number + 1
+
+        return fetch(DB_URL, {
+            method: 'PUT',
+            body: JSON.stringify(newNumber)
+        })
     }
 
     render() {
@@ -32,19 +53,6 @@ export const Counter = class {
     inc() {
         this.number = this.number + 1
         this.render()
-    }
-
-    status() {
-        console.log('Current number is: ' + this.number)
-        return this.number
-    }
-
-    toString() {
-        return 'Current number is: ' + this.number
-    }
-
-    valueOf() {
-        return this.number
     }
 
 }
