@@ -12,6 +12,8 @@ export const Counter = class {
 
         this.selector = selector
         this.container = container
+        this.isLoading = true
+
         this.number = 0
     }
 
@@ -20,16 +22,21 @@ export const Counter = class {
         this.fetchNumber()
     }
 
-    fetchNumber(){
+    fetchNumber() {
+        this.isLoading = true
+
         return fetch(DB_URL)
             .then((r) => r.json())
-            .then((numberFromDb) =>  {
+            .then((numberFromDb) => {
                 this.number = numberFromDb
+                this.isLoading = false
                 this.render()
             })
     }
 
     incAndRefetch() {
+        this.isLoading = true
+
         const newNumber = this.number + 1
 
         return fetch(DB_URL, {
@@ -42,11 +49,13 @@ export const Counter = class {
 
         this.container.innerText = ''
 
-        const h1 = new Header(this.number)
-        const button = new Button('+', () => this.inc())
-
+        const h1 = new Header(this.isLoading ? '...' : this.number)
         this.container.appendChild(h1.render())
-        this.container.appendChild(button.render())
+
+        if (!this.isLoading) {
+            const button = new Button('+', () => this.inc())
+            this.container.appendChild(button.render())
+        }
 
     }
 
